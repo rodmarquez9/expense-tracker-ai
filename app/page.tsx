@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Expense, ExpenseFilters } from '@/types';
 import { storage } from '@/lib/storage';
-import { filterExpenses, calculateSummary, exportToCSV } from '@/lib/utils';
+import { filterExpenses, calculateSummary } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ExpenseForm } from '@/components/expenses/ExpenseForm';
@@ -13,11 +13,13 @@ import { SummaryCards } from '@/components/dashboard/SummaryCards';
 import { CategoryChart } from '@/components/dashboard/CategoryChart';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { Loading } from '@/components/ui/Loading';
+import { ExportHub } from '@/components/export/ExportHub';
 
 export default function ExpenseTrackerPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExportHubOpen, setIsExportHubOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'expenses'>('dashboard');
@@ -74,10 +76,6 @@ export default function ExpenseTrackerPage() {
     setEditingExpense(null);
   };
 
-  const handleExportCSV = () => {
-    exportToCSV(filteredExpenses);
-  };
-
   const summary = calculateSummary(expenses);
 
   if (isLoading) {
@@ -114,7 +112,7 @@ export default function ExpenseTrackerPage() {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={handleExportCSV}
+                onClick={() => setIsExportHubOpen(true)}
                 disabled={expenses.length === 0}
               >
                 <svg
@@ -126,9 +124,9 @@ export default function ExpenseTrackerPage() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  <path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                 </svg>
-                Export CSV
+                Export Hub
               </Button>
               <Button onClick={() => setIsModalOpen(true)}>
                 <svg
@@ -225,6 +223,13 @@ export default function ExpenseTrackerPage() {
           isEdit={!!editingExpense}
         />
       </Modal>
+
+      {/* Export Hub */}
+      <ExportHub
+        isOpen={isExportHubOpen}
+        onClose={() => setIsExportHubOpen(false)}
+        expenses={expenses}
+      />
     </div>
   );
 }
