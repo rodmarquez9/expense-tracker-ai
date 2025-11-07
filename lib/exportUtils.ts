@@ -1,0 +1,204 @@
+import { Expense } from '@/types';
+import { formatDate, formatCurrency } from './utils';
+import jsPDF from 'jspdf';
+
+/**
+ * Export expenses to CSV format with custom filename
+ */
+export function exportToCSVAdvanced(expenses: Expense[], filename: string): void {
+  const headers = ['Date', 'Category', 'Description', 'Amount', 'Created At', 'Updated At'];
+  const rows = expenses.map(expense => [
+    formatDate(expense.date),
+    expense.category,
+    expense.description,
+    expense.amount.toFixed(2),
+    formatDate(expense.createdAt),
+    formatDate(expense.updatedAt),
+  ]);
+
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+  ].join('\n');
+
+  downloadFile(csvContent, `${filename}.csv`, 'text/csv;charset=utf-8;');
+}
+
+/**
+ * Export expenses to JSON format
+ */
+export function exportToJSON(expenses: Expense[], filename: string): void {
+  const jsonData = {
+    exportDate: new Date().toISOString(),
+    totalRecords: expenses.length,
+    totalAmount: expenses.reduce((sum, exp) => sum + exp.amount, 0),
+    expenses: expenses.map(expense => ({
+      id: expense.id,
+      date: expense.date,
+      category: expense.category,
+      description: expense.description,
+      amount: expense.amount,
+      createdAt: expense.createdAt,
+      updatedAt: expense.updatedAt,
+    })),
+  };
+
+  const jsonContent = JSON.stringify(jsonData, null, 2);
+  downloadFile(jsonContent, `${filename}.json`, 'application/json;charset=utf-8;');
+}
+
+/**
+ * Export expenses to PDF format
+ */
+export async function exportToPDF(expenses: Expense[], filename: string): Promise<void> {
+  const doc = new jsPDF();
+
+  // Set up PDF properties
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 15;
+  const lineHeight = 7;
+  let yPosition = margin;
+
+  // Helper function to add new page if needed
+  const checkPageBreak = (requiredSpace: number = lineHeight) => {
+    if (yPosition + requiredSpace > pageHeight - margin) {
+      doc.addPage();
+      yPosition = margin;
+      return true;
+    }
+    return false;
+  };
+
+  // Header
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Expense Report', margin, yPosition);
+  yPosition += lineHeight * 2;
+
+  // Export info
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Export Date: ${formatDate(new Date().toISOString())}`, margin, yPosition);
+  yPosition += lineHeight;
+  doc.text(`Total Records: ${expenses.length}`, margin, yPosition);
+  yPosition += lineHeight;
+
+  const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  doc.text(`Total Amount: ${formatCurrency(totalAmount)}`, margin, yPosition);
+  yPosition += lineHeight * 2;
+
+  // Draw separator line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += lineHeight;
+
+  // Table header
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(0, 0, 0);
+
+  const colWidths = {
+    date: 30,
+    category: 35,
+    description: 70,
+    amount: 30,
+  };
+
+  let xPosition = margin;
+  doc.text('Date', xPosition, yPosition);
+  xPosition += colWidths.date;
+  doc.text('Category', xPosition, yPosition);
+  xPosition += colWidths.category;
+  doc.text('Description', xPosition, yPosition);
+  xPosition += colWidths.description;
+  doc.text('Amount', xPosition, yPosition);
+
+  yPosition += lineHeight;
+
+  // Draw header line
+  doc.setLineWidth(0.5);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += lineHeight * 0.5;
+
+  // Table rows
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+
+  expenses.forEach((expense, index) => {
+    checkPageBreak(lineHeight * 1.5);
+
+    // Alternate row background
+    if (index % 2 === 0) {
+      doc.setFillColor(245, 245, 245);
+      doc.rect(margin - 2, yPosition - 5, pageWidth - (margin * 2) + 4, lineHeight, 'F');
+    }
+
+    doc.setTextColor(0, 0, 0);
+
+    xPosition = margin;
+    doc.text(formatDate(expense.date), xPosition, yPosition);
+
+    xPosition += colWidths.date;
+    doc.text(expense.category, xPosition, yPosition);
+
+    xPosition += colWidths.category;
+    // Truncate long descriptions
+    const description = expense.description.length > 40
+      ? expense.description.substring(0, 37) + '...'
+      : expense.description;
+    doc.text(description, xPosition, yPosition);
+
+    xPosition += colWidths.description;
+    doc.text(formatCurrency(expense.amount), xPosition, yPosition);
+
+    yPosition += lineHeight;
+  });
+
+  // Footer
+  checkPageBreak(lineHeight * 3);
+  yPosition += lineHeight;
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, yPosition, pageWidth - margin, yPosition);
+  yPosition += lineHeight;
+
+  doc.setFontSize(8);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Generated by Expense Tracker on ${new Date().toLocaleDateString()}`, margin, yPosition);
+
+  // Add page numbers
+  const pageCount = doc.getNumberOfPages();
+  doc.setFontSize(8);
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.text(
+      `Page ${i} of ${pageCount}`,
+      pageWidth - margin - 20,
+      pageHeight - 10
+    );
+  }
+
+  // Save the PDF
+  doc.save(`${filename}.pdf`);
+}
+
+/**
+ * Helper function to download a file
+ */
+function downloadFile(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob([content], { type: mimeType });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', filename);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // Clean up the URL object
+  URL.revokeObjectURL(url);
+}
