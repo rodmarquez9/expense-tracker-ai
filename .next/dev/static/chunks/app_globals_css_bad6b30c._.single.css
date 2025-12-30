@@ -57,6 +57,7 @@
     --color-orange-100: #ffedd5;
     --color-orange-500: #fe6e00;
     --color-orange-600: #f05100;
+    --color-yellow-500: #edb200;
     --color-green-50: #f0fdf4;
     --color-green-100: #dcfce7;
     --color-green-200: #b9f8cf;
@@ -133,6 +134,7 @@
       --color-orange-100: lab(94.7127% 3.58394 14.3151);
       --color-orange-500: lab(64.272% 57.1788 90.3583);
       --color-orange-600: lab(57.1026% 64.2584 89.8886);
+      --color-yellow-500: lab(76.3898% 14.5258 98.4589);
       --color-green-50: lab(98.1563% -5.60117 2.75915);
       --color-green-100: lab(96.1861% -13.8464 6.52365);
       --color-green-200: lab(92.4222% -26.4702 12.9427);
@@ -488,6 +490,14 @@
     margin-bottom: calc(var(--spacing) * 4);
   }
 
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
+
+  .mb-8 {
+    margin-bottom: calc(var(--spacing) * 8);
+  }
+
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
@@ -520,6 +530,10 @@
     display: inline-flex;
   }
 
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
+
   .h-3 {
     height: calc(var(--spacing) * 3);
   }
@@ -538,6 +552,10 @@
 
   .h-8 {
     height: calc(var(--spacing) * 8);
+  }
+
+  .h-10 {
+    height: calc(var(--spacing) * 10);
   }
 
   .h-12 {
@@ -578,6 +596,10 @@
 
   .w-8 {
     width: calc(var(--spacing) * 8);
+  }
+
+  .w-10 {
+    width: calc(var(--spacing) * 10);
   }
 
   .w-12 {
@@ -840,6 +862,10 @@
     background-color: var(--color-gray-200);
   }
 
+  .bg-gray-400 {
+    background-color: var(--color-gray-400);
+  }
+
   .bg-gray-500 {
     background-color: var(--color-gray-500);
   }
@@ -866,6 +892,10 @@
 
   .bg-orange-500 {
     background-color: var(--color-orange-500);
+  }
+
+  .bg-orange-600 {
+    background-color: var(--color-orange-600);
   }
 
   .bg-pink-100 {
@@ -906,6 +936,10 @@
 
   .bg-white {
     background-color: var(--color-white);
+  }
+
+  .bg-yellow-500 {
+    background-color: var(--color-yellow-500);
   }
 
   .bg-gradient-to-r {
@@ -1287,6 +1321,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:opacity-80:hover {
+      opacity: .8;
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:shadow-lg:hover {
       --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -1357,6 +1397,12 @@
   @media (min-width: 48rem) {
     .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .md\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
