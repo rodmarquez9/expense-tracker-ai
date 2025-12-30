@@ -14,6 +14,7 @@ import { CategoryChart } from '@/components/dashboard/CategoryChart';
 import { RecentExpenses } from '@/components/dashboard/RecentExpenses';
 import { Loading } from '@/components/ui/Loading';
 import { ExportHub } from '@/components/export/ExportHub';
+import Link from 'next/link';
 
 export default function ExpenseTrackerPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -109,6 +110,44 @@ export default function ExpenseTrackerPage() {
               <h1 className="text-2xl font-bold text-gray-900">Expense Tracker</h1>
             </div>
             <div className="flex items-center gap-3">
+              <Link href="/top-categories">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Top Categories
+                </Button>
+              </Link>
+              <Link href="/top-vendors">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  Top Vendors
+                </Button>
+              </Link>
               <Button
                 variant="secondary"
                 size="sm"
