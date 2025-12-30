@@ -48,3 +48,12 @@ export interface ExpenseSummary {
     amount: number;
   } | null;
 }
+
+export interface VendorSummary {
+  vendor: string;
+  totalAmount: number;
+  transactionCount: number;
+  averageTransaction: number;
+  percentage: number;
+  topCategory: ExpenseCategory;
+}
